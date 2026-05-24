@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/JacobPEvans/secrets-sync/compare/v0.15.0...v0.16.0) (2026-05-24)
+
+
+### Features
+
+* add docs to secret distribution anchors ([#85](https://github.com/JacobPEvans/secrets-sync/issues/85)) ([b71e5a2](https://github.com/JacobPEvans/secrets-sync/commit/b71e5a27c387cd9d162df7278cc654b92cef0e0a))
+
 ## [0.15.0](https://github.com/JacobPEvans/secrets-sync/compare/v0.14.0...v0.15.0) (2026-05-15)
 
 
