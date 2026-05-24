@@ -1,75 +1,25 @@
 # Security
 
-## Branch Protection Required
+The architecture narrative for this repo — Tier 1 vs Tier 2 distribution,
+the boundary between `secrets-sync` and `dopplerhq/secrets-fetch-action`,
+Doppler / GitHub Actions topology, and the cross-tool flow diagrams —
+lives on the public docs site:
 
-Enable branch protection on `main` before production use. Without it, anyone
-with write access can modify config and trigger syncs.
+- **[Security · secrets-sync](https://docs.jacobpevans.com/security/secrets-sync)**
+  — workflow internals diagram, repo-grouping anchors, rotation cadence.
+- **[Security · How it fits together](https://docs.jacobpevans.com/security/how-it-fits-together)**
+  — CI / local-dev / AI-session secret flows.
+- **[Security · Golden laws](https://docs.jacobpevans.com/security/golden-laws)**
+  — the 15 non-negotiable rules that govern this repo (notably #5 single
+  source of truth, #6 time-bound credentials, #7 fail closed, #9 audit trail).
 
-## Architecture
+Everything below is the repo-specific operational runbook. The narrative
+above is the source of truth for the architecture.
 
-### Two-Tier Secret Distribution
+## Branch protection (required)
 
-Secrets are distributed using one of two patterns depending on how broadly they
-are shared and where they originate:
-
-#### Tier 1 — Broadly-shared secrets (secrets-sync workflow)
-
-Secrets distributed to many repos (Slack webhooks, Claude tokens, GitHub App
-keys, PATs). The Doppler auto-sync pushes these into secrets-sync's GitHub
-Actions secrets, and the sync workflow distributes them to target repos.
-
-- Low sensitivity or infrequently rotated
-- Distributed to 4–20 repos each
-- Managed via `secrets-config.yml`
-
-#### Tier 2 — Infrastructure-specific secrets (per-repo Doppler runtime fetch)
-
-Secrets from `iac-conf-mgmt/prd` needed only by specific infra repos (e.g.
-`MSSQL_SA_PASSWORD`, `QDRANT_API_KEY`). Infra repos fetch these at CI runtime
-using `dopplerhq/secrets-fetch-action` — those infra secret values are never
-stored in GitHub Actions secrets; only the read-only Doppler token
-(`GH_ACTION_DOPPLER_IAC_CONF_MGMT`) is stored as a GitHub Actions secret.
-
-- Scoped to one Doppler config (`iac-conf-mgmt/prd`)
-- Never duplicated into the secrets-sync Doppler project
-- Each infra repo holds `GH_ACTION_DOPPLER_IAC_CONF_MGMT` (distributed via secrets-sync Tier 1)
-- The token itself is read-only and grants access to the full `iac-conf-mgmt/prd` config
-
-```text
-secrets-sync repo
-  └─ distributes GH_ACTION_DOPPLER_IAC_CONF_MGMT ──► <infra-repo>
-                                                          │
-                                                          └─ CI runtime: dopplerhq/secrets-fetch-action
-                                                               └─ fetches from iac-conf-mgmt/prd
-                                                                    ├─ MSSQL_SA_PASSWORD
-                                                                    └─ QDRANT_API_KEY
-```
-
-**Why this split?** Adding `iac-conf-mgmt/prd` to the Tier 1 auto-sync would
-expose every secret in that Doppler project just to get 2 values. Runtime fetch
-keeps the blast radius contained: secrets-sync never sees the infra secrets,
-and infra secrets are fetched only during CI runs.
-
-### Tier 1 Secret Storage
-
-1. **PAT scope**: Token scoped to owner, `Secrets: Read/write`, `Metadata: Read-only`
-2. **Explicit allowlists**: Every repo must be listed in `secrets-config.yml`
-3. **Branch protection**: Require PR reviews for config changes
-
-### Tier 2 Token Scope
-
-The `GH_ACTION_DOPPLER_IAC_CONF_MGMT` service token is:
-
-- **Read-only** — cannot modify Doppler secrets
-- **Scoped to `iac-conf-mgmt/prd`** — cannot access other Doppler projects
-- **Stored as a GitHub Actions secret** — encrypted at rest, masked in logs
-- Protected by branch protection + CODEOWNERS against unauthorized workflow edits
-
-Remaining risk: on the Doppler free plan, service tokens scope to the entire
-config (not individual secrets). Mitigation: the token is read-only, and
-access to it is limited to repos that genuinely need infra secrets.
-
-## Setup Branch Protection
+Enable branch protection on `main` before production use. Without it,
+anyone with write access can modify config and trigger syncs.
 
 Settings → Branches → Add rule:
 
@@ -84,11 +34,35 @@ Settings → Branches → Add rule:
 /.github/workflows/sync-secrets.yml @your-username
 ```
 
+## PAT rotation
+
+The `GH_PAT_SECRETS_SYNC_ACTION` token rotates every **90 days**, aligned
+with GitHub's fine-grained PAT default expiry. Same cadence for any Doppler
+service token (e.g. `GH_ACTION_DOPPLER_IAC_CONF_MGMT`) that this workflow
+distributes.
+
+Rotation steps:
+
+1. Mint a new fine-grained PAT per [`SETUP.md`](./SETUP.md) (Secrets: R/W,
+   Variables: R/W, Metadata: R/O, Codespaces secrets: R/W and Dependabot
+   secrets: R/W if syncing to those scopes, repos: the explicit allowlist).
+2. `gh secret set GH_PAT_SECRETS_SYNC_ACTION --repo <user>/secrets-sync`
+   with the new value.
+3. Trigger the workflow with
+   `gh workflow run sync-secrets.yml --repo <user>/secrets-sync -f dry_run=true`
+   to verify auth.
+4. Revoke the old PAT in GitHub settings.
+
 ## Limitations
 
-Does NOT protect against:
+This repo does **not** protect against:
 
 - Compromised GitHub account
 - Malicious collaborators with write access
-- Workflow log exposure
-- Secret values in git history
+- Workflow log exposure (mask values downstream)
+- Secret values in git history (rotate anything that ever appeared in a commit)
+
+For each of these, the controls live elsewhere — see
+[Golden law #2](https://docs.jacobpevans.com/security/golden-laws#2-ai-tools-cannot-view-protected-secret-values),
+[#3](https://docs.jacobpevans.com/security/golden-laws#3-human-approval-gates-every-potentially-destructive-action),
+and [#14](https://docs.jacobpevans.com/security/golden-laws#14-rotate-on-suspicion-not-just-schedule).
