@@ -44,7 +44,8 @@ distributes.
 Rotation steps:
 
 1. Mint a new fine-grained PAT per [`SETUP.md`](./SETUP.md) (Secrets: R/W,
-   Variables: R/W, Metadata: R/O, repos: the explicit allowlist).
+   Variables: R/W, Metadata: R/O, Codespaces secrets: R/W and Dependabot
+   secrets: R/W if syncing to those scopes, repos: the explicit allowlist).
 2. `gh secret set GH_PAT_SECRETS_SYNC_ACTION --repo <user>/secrets-sync`
    with the new value.
 3. Trigger the workflow with
@@ -62,4 +63,6 @@ This repo does **not** protect against:
 - Secret values in git history (rotate anything that ever appeared in a commit)
 
 For each of these, the controls live elsewhere — see
-[Golden laws · #2, #3, #14](https://docs.jacobpevans.com/security/golden-laws).
+[Golden law #2](https://docs.jacobpevans.com/security/golden-laws#2-ai-tools-cannot-view-protected-secret-values),
+[#3](https://docs.jacobpevans.com/security/golden-laws#3-human-approval-gates-every-potentially-destructive-action),
+and [#14](https://docs.jacobpevans.com/security/golden-laws#14-rotate-on-suspicion-not-just-schedule).
