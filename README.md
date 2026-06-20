@@ -21,7 +21,7 @@ Instead of manually updating `API_TOKEN` in 20 different repos, update it once h
 - 🔒 Secure by design (fine-grained PAT, explicit allowlists)
 - 📚 Simple to use and maintain
 
-## Quick Start
+## Installation
 
 ### 1. Fork this repository
 
@@ -159,3 +159,7 @@ Built with [jpoehnelt/secrets-sync-action][action] by [@jpoehnelt](https://githu
 
 [action]: https://github.com/jpoehnelt/secrets-sync-action
 [pat]: https://github.com/settings/personal-access-tokens/new
+
+---
+
+> Part of a [larger ecosystem of ~40 repos](https://docs.jacobpevans.com) — see how it all fits together.

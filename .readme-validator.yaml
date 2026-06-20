@@ -1,7 +1,6 @@
 # README validation config for secrets-sync
-# This repo uses "Quick Start" as the entry point rather than "Installation"
 required_sections:
-  - Quick Start
+  - Installation
   - Usage
 optional_sections:
   - Contributing
