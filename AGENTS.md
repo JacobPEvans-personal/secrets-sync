@@ -1,3 +1,7 @@
+---
+skill-groups: [core, git]
+---
+
 # AI Agent Instructions for secrets-sync
 
 ## Repository Structure
