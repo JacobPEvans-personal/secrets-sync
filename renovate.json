@@ -1,7 +1,4 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended", "local>JacobPEvans/.github:renovate-presets"],
-  "automerge": false,
-  "labels": ["dependencies"],
-  "assignees": ["JacobPEvans"]
+  "extends": ["local>dryvist/.github"]
 }
