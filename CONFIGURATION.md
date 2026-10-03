@@ -24,27 +24,18 @@ secrets:
 ## Two-tier distribution
 
 This repo handles Tier 1 (broadly-shared secrets distributed via the
-matrix workflow). Tier 2 (infrastructure-specific secrets fetched at
-workflow runtime via `dopplerhq/secrets-fetch-action`) is intentionally
-out of scope here — those values never enter GitHub Actions secrets.
+matrix workflow). Tier 2 (infrastructure-specific secrets each repo fetches
+at workflow runtime from its own secret store) is intentionally out of
+scope here — those values never enter GitHub Actions secrets.
 
 For the full narrative on the two-tier model, decision table, and where
 each kind of secret should live, see
 **[Security · secrets-sync](https://docs.jacobpevans.com/security/secrets-sync)**
 and **[Security · How it fits together](https://docs.jacobpevans.com/security/how-it-fits-together)**.
 
-### To add a new infra repo to Tier 2
-
-1. Add the repo to the `_infra_repos` anchor in `secrets-config.yml` and
-   push — secrets-sync distributes `GH_ACTION_DOPPLER_IAC_CONF_MGMT`
-   automatically.
-2. Add the repo to the fine-grained PAT's repository access list (see
-   `TROUBLESHOOTING.md`).
-3. Add a `dopplerhq/secrets-fetch-action` step to the repo's workflow.
-
-**Do NOT** add `iac-conf-mgmt/prd` secrets directly to `secrets-config.yml`.
-This would copy values from their source, creating a second source of truth
-that can drift — see [Golden law #5](https://docs.jacobpevans.com/security/golden-laws#5-one-source-of-truth-per-secret).
+**Do NOT** add Tier 2 secrets to `secrets-config.yml`. This would copy
+values from their source, creating a second source of truth that can
+drift — see [Golden law #5](https://docs.jacobpevans.com/security/golden-laws#5-one-source-of-truth-per-secret).
 
 ## Adding a Tier 1 Secret
 
