@@ -1,9 +1,8 @@
 # Security
 
 The architecture narrative for this repo — Tier 1 vs Tier 2 distribution,
-the boundary between `secrets-sync` and `dopplerhq/secrets-fetch-action`,
-Doppler / GitHub Actions topology, and the cross-tool flow diagrams —
-lives on the public docs site:
+the boundary between `secrets-sync` and runtime secret fetches, and the
+cross-tool flow diagrams — lives on the public docs site:
 
 - **[Security · secrets-sync](https://docs.jacobpevans.com/security/secrets-sync)**
   — workflow internals diagram, repo-grouping anchors, rotation cadence.
@@ -37,9 +36,8 @@ Settings → Branches → Add rule:
 ## PAT rotation
 
 The `GH_PAT_SECRETS_SYNC_ACTION` token rotates every **90 days**, aligned
-with GitHub's fine-grained PAT default expiry. Same cadence for any Doppler
-service token (e.g. `GH_ACTION_DOPPLER_IAC_CONF_MGMT`) that this workflow
-distributes.
+with GitHub's fine-grained PAT default expiry. Same cadence for any
+service token that this workflow distributes.
 
 Rotation steps:
 

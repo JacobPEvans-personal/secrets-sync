@@ -20,7 +20,7 @@ If a private repo needs secrets distributed to it, the owner must handle that ou
 
 ## Repository Purpose
 
-Distributes GitHub Actions secrets from Doppler to target repositories via a sync workflow.
+Distributes GitHub Actions secrets and variables stored on this repository to target repositories via a sync workflow.
 Only public repositories should be listed in `secrets-config.yml`.
 
 ## Alphabetical Ordering
