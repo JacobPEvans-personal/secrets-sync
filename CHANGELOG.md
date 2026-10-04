@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/JacobPEvans-personal/secrets-sync/compare/v0.16.0...v0.17.0) (2026-10-04)
+
+
+### Features
+
+* **config:** add GH_ACTION_TIMEOUT_NIX variable ([#90](https://github.com/JacobPEvans-personal/secrets-sync/issues/90)) ([b8df7cf](https://github.com/JacobPEvans-personal/secrets-sync/commit/b8df7cf6eebfd8030729fb5da43e50701dcbd2d5))
+
 ## [0.16.0](https://github.com/JacobPEvans/secrets-sync/compare/v0.15.0...v0.16.0) (2026-05-24)
 
 
