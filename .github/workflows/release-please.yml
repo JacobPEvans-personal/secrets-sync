@@ -11,6 +11,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: dryvist/.github/.github/workflows/_release-please.yml@d85fdaffa8bb5382c3e3764c3de8922feb517399 # main
+    uses: dryvist/.github/.github/workflows/_release-please.yml@5d802e6d49f6ee0de34286469cb356b6d42c50a7 # main
     secrets:
       GH_ACTION_RELEASE_PLEASE_PRIVATE_KEY: ${{ secrets.GH_ACTION_RELEASE_PLEASE_PRIVATE_KEY }}
