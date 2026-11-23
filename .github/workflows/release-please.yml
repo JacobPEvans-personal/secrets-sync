@@ -3,6 +3,7 @@ name: Release Please
 on:
   push:
     branches: [main]
+  pull_request:
 
 permissions: {}
 
@@ -11,6 +12,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: dryvist/.github/.github/workflows/_release-please.yml@d85fdaffa8bb5382c3e3764c3de8922feb517399 # main
+      statuses: write
+      checks: read
+    uses: JacobPEvans/.github/.github/workflows/_release.yml@v1
     secrets:
       GH_ACTION_RELEASE_PLEASE_PRIVATE_KEY: ${{ secrets.GH_ACTION_RELEASE_PLEASE_PRIVATE_KEY }}
